@@ -1,0 +1,75 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as sp
+import statsmodels.formula.api as sm
+
+df= pd.read_table("Sales Data Set.txt", sep="\t")
+
+df["sale_date"]=pd.to_datetime(df["sale_date"])
+df['quarter']=df['sale_date'].dt.quarter
+df["year"]=df["sale_date"].dt.year
+
+df= df.dropna(subset=['net_sales_prod1', 'net_sales_prod2'])
+
+
+
+#product 1
+df["net_sales_prod1"]=df["net_sales_prod1"].str.replace(",","")
+df["net_sales_prod1"]=df["net_sales_prod1"].str.replace("$", "")
+df["net_sales_prod1"]=pd.to_numeric(df["net_sales_prod1"])
+
+qgroup_prod1 = df.groupby(["quarter"])["net_sales_prod1"].mean().reset_index()
+
+ygroup_prod1 = df.groupby(["year", "quarter"])["net_sales_prod1"].mean().reset_index()
+
+qgroup_prod1plot = df.groupby(["quarter"])
+qgroup_prod1plot.plot.scatter(x="sale_date", y="net_sales_prod1")
+
+
+
+Y1=np.array(df['net_sales_prod1'].values, dtype=float)
+X=np.array(df['sale_date'], dtype=float)
+slope, intercept, r_value, p_value, std_err = sp.linregress(X, Y1)
+Xf= np.linspace(min(X), max(X),1447)
+Xf1=Xf.copy()
+Xf1= pd.to_datetime(Xf1)
+
+
+Y1f=(slope*Xf) + intercept
+
+f, ax= plt.subplots(1,1)
+
+df.plot.scatter(x='sale_date', y='net_sales_prod1')
+plt.plot(Xf1, Y1f, label='linear fit', lw=3, color='red')
+plt.show()
+
+
+#product 2
+df["net_sales_prod2"]=df["net_sales_prod2"].str.replace(",","")
+df["net_sales_prod2"]=df["net_sales_prod2"].str.replace("$", "")
+df["net_sales_prod2"]=pd.to_numeric(df["net_sales_prod2"])
+
+
+qgroup_prod2 = df.groupby(["quarter"])["net_sales_prod2"].mean().reset_index()
+ygroup_prod2 = df.groupby(["year", "quarter"])["net_sales_prod2"].mean().reset_index()
+
+qgroup_prod2plot = df.groupby(["quarter"])
+qgroup_prod2plot.plot.scatter(x="sale_date", y="net_sales_prod2")
+Y2=np.array(df['net_sales_prod2'].values, dtype=float)
+X=np.array(df['sale_date'], dtype=float)
+slope, intercept, r_value, p_value, std_err = sp.linregress(X, Y2)
+Xf= np.linspace(min(X), max(X),1447)
+Xf1=Xf.copy()
+Xf1= pd.to_datetime(Xf1)
+
+
+Y2f=(slope*Xf) + intercept
+print(p_value, std_err)
+f, ax= plt.subplots(1,1)
+
+df.plot.scatter(x='sale_date', y='net_sales_prod2')
+plt.plot(Xf1, Y2f, label='linear fit', lw=3, color='red')
+plt.show()
+
+plt.show()
