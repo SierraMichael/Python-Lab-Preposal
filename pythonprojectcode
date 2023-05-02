@@ -73,3 +73,8 @@ plt.plot(Xf1, Y2f, label='linear fit', lw=3, color='red')
 plt.show()
 
 plt.show()
+
+
+
+#youtube video link 
+https://youtu.be/9hOzmqC7Peo 
